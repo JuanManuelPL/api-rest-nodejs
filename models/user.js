@@ -1,6 +1,8 @@
-import {Schema, model} from 'mongoose';
+import mongoose from 'mongoose';
+import bcryptjs from 'bcryptjs';
+import { hashErrorLabel } from '../helpers/constants.js'
 
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
     email:{
         type: String,
         required: true,
@@ -12,8 +14,25 @@ const userSchema = new Schema({
     password:{
         type: String,
         required: true
-
     }
 })
 
-export const userModel = model('user', userSchema)
+userSchema.pre("save", async function(next){
+
+    const user = this;
+    
+    if(!user.isModified('password')) return next();
+
+    try {
+        const salt = await bcryptjs.genSaltSync(10);
+        const hash = await bcryptjs.hashSync(user.password, salt);
+
+        user.password = hash;
+
+        next();    
+    } catch (error) {
+        console.log(hashErrorLabel + error)
+    }
+})
+
+export const User = mongoose.model('User', userSchema)

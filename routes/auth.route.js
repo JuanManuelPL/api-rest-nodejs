@@ -1,17 +1,17 @@
-import express from 'express'
-import {login, register} from '../controllers/auth.controller.js'
+import { Router } from 'express'
+import { login, register } from '../controllers/auth.controller.js'
 import { validationResultExpress } from '../middlewares/validationResult.js'
-import {body} from 'express-validator'
-
-const router = express.Router()
+import { body } from 'express-validator'
+import { badEmailFormatLabel, badPasswordFormatLabel } from '../helpers/constants.js'
+const router = Router()
 
 router.post('/register',
     [
-        body('email', 'Formato de email incorrecto')
+        body('email', badEmailFormatLabel)
             .trim()
             .isEmail()
             .normalizeEmail(),
-        body('password', 'Formato de contraseña incorrecta')
+        body('password', badPasswordFormatLabel)
             .trim()
             .isLength({min: 8})
 
@@ -22,11 +22,11 @@ router.post('/register',
 
 router.post('/login',
     [
-        body('email', 'Formato de email incorrecto')
+        body('email', badEmailFormatLabel)
             .trim()
             .isEmail()
             .normalizeEmail(),
-        body('password', 'Formato de contraseña incorrecta')
+        body('password', badPasswordFormatLabel)
             .trim()
             .isLength({min: 8})
     ], 
